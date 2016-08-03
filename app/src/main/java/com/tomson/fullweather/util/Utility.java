@@ -38,7 +38,8 @@ public class Utility {
     /**
      * 解析和处理服务器返回的城市数据
      */
-    public synchronized static boolean handleCitysResponse(FullWeatherDB fullWeatherDB, String response) {
+    public synchronized static boolean handleCitysResponse(FullWeatherDB fullWeatherDB, String response, int
+            provinceId) {
 
         if (!TextUtils.isEmpty(response)) {
             String[] allCities = response.split(",");
@@ -48,6 +49,7 @@ public class Utility {
                     City city = new City();
                     city.setCityCode(array[0]);
                     city.setCityName(array[1]);
+                    city.setProvinceId(provinceId);
                     //将解析出来的数据存储到City表
                     fullWeatherDB.saveCity(city);
                 }
@@ -60,7 +62,7 @@ public class Utility {
     /**
      * 解析和处理服务器返回的县城数据
      */
-    public synchronized static boolean handleCountyResponse(FullWeatherDB fullWeatherDB, String response) {
+    public synchronized static boolean handleCountyResponse(FullWeatherDB fullWeatherDB, String response, int cityId) {
 
         if (!TextUtils.isEmpty(response)) {
             String[] allCounties = response.split(",");
@@ -70,6 +72,7 @@ public class Utility {
                     County county = new County();
                     county.setCountyCode(array[0]);
                     county.setCountyName(array[1]);
+                    county.setCityId(cityId);
                     //将解析出来的数据存储到County表
                     fullWeatherDB.saveCounty(county);
                 }
