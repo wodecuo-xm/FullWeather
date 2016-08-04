@@ -4,7 +4,10 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowId;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -33,7 +36,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
     public static final int LEVEL_COUNTY = 2;
 
     private ProgressDialog mProgressDialog;
-    private TextView mTxtTilte;
+    private TextView mTxtTitle;
     private ListView mLvList;
     private ArrayAdapter<String> mAdapter;
     private FullWeatherDB fullWeatherDB;
@@ -64,18 +67,20 @@ public class ChooseAreaActivity extends AppCompatActivity {
      */
     private int currentLevel;
 
+    private static final String TAG = "ChooseAreaActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_area);
-        findViewById();
 
+        findViewById();
         initView();
     }
 
     private void findViewById() {
         mLvList = (ListView) findViewById(R.id.lv_list);
-        mTxtTilte = (TextView) findViewById(R.id.txt_titile);
+        mTxtTitle = (TextView) findViewById(R.id.txt_title);
     }
 
     private void initView() {
@@ -109,7 +114,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
             }
             mAdapter.notifyDataSetChanged();
             mLvList.setSelection(0);
-            mTxtTilte.setText("中国");
+            mTxtTitle.setText("中国");
             currentLevel = LEVEL_PROVINCE;
         } else {
             queryFromServer(null, "province");
@@ -128,7 +133,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
             }
             mAdapter.notifyDataSetChanged();
             mLvList.setSelection(0);
-            mTxtTilte.setText(selectedProvince.getProvinceName());
+            mTxtTitle.setText(selectedProvince.getProvinceName());
             currentLevel = LEVEL_CITY;
         } else {
             queryFromServer(selectedProvince.getProvinceCode(), "city");
@@ -147,7 +152,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
             }
             mAdapter.notifyDataSetChanged();
             mLvList.setSelection(0);
-            mTxtTilte.setText(selectedCity.getCityName());
+            mTxtTitle.setText(selectedCity.getCityName());
             currentLevel = LEVEL_COUNTY;
         } else {
             queryFromServer(selectedCity.getCityCode(), "county");
@@ -163,14 +168,16 @@ public class ChooseAreaActivity extends AppCompatActivity {
     private void queryFromServer(final String codeId, final String type) {
         String address;
         if (!TextUtils.isEmpty(codeId)) {
-            address = "htpp://www.weather.com.cn/data/list3/city" + codeId + ".xml";
+            address = "http://www.weather.com.cn/data/list3/city" + codeId + ".xml";
         } else {
             address = "http://www.weather.com.cn/data/list3/city.xml";
         }
+        Log.i(TAG, "address-->" + address);
         showProgressDialog();
         HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
             @Override
             public void onFinish(String response) {
+                Log.i(TAG, "onFinish");
                 boolean result = false;
                 if ("province".equals(type)) {
                     result = Utility.handleProvincesResponse(fullWeatherDB, response);
@@ -199,6 +206,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
+                Log.i(TAG, "onError");
                 //通过runOnUiThread()方法回到主线程处理UI
                 runOnUiThread(new Runnable() {
                     @Override
@@ -212,24 +220,24 @@ public class ChooseAreaActivity extends AppCompatActivity {
     }
 
     /**
-     * 显示进度对话框
-     */
-    private void closeProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage("正在加载...");
-            mProgressDialog.setCancelable(false);
-        }
-        mProgressDialog.show();
-    }
-
-    /**
      * 关闭进度对话框
      */
-    private void showProgressDialog() {
+    private void closeProgressDialog() {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }
+    }
+
+    /**
+     * 显示进度对话框
+     */
+    private void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage("  正在加载 ...");
+            mProgressDialog.setCanceledOnTouchOutside(false);
+        }
+        mProgressDialog.show();
     }
 
     /**
@@ -237,11 +245,11 @@ public class ChooseAreaActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+//        super.onBackPressed();
         if (currentLevel == LEVEL_COUNTY) {
             queryCities();
         } else if (currentLevel == LEVEL_CITY) {
-            queryCities();
+            queryProvinces();
         } else {
             finish();
         }

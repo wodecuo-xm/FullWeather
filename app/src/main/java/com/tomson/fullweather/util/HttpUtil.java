@@ -1,18 +1,19 @@
 package com.tomson.fullweather.util;
 
-import java.io.BufferedInputStream;
+import android.util.Log;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Created by Tomson on 2016/8/2.
  */
 public class HttpUtil {
+
+    private static final String TAG = "HttpUtil";
 
     public static void sendHttpRequest(final String address, final HttpCallBackListener listener) {
         new Thread(new Runnable() {
@@ -45,6 +46,6 @@ public class HttpUtil {
                     }
                 }
             }
-        });
+        }).start();
     }
 }
