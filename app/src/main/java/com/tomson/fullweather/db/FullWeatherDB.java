@@ -11,7 +11,6 @@ import com.tomson.fullweather.model.Province;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.CRC32;
 
 /**
  * Created by Tomson on 2016/8/2.
@@ -76,7 +75,7 @@ public class FullWeatherDB {
      * @return List<Province>
      */
     public List<Province> loadProvinces() {
-        List<Province> provinceList = new ArrayList<Province>();
+        List<Province> provinceList = new ArrayList<>();
         Cursor cursor = db.query("Province", null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
@@ -111,7 +110,7 @@ public class FullWeatherDB {
      * @return List<City>
      */
     public List<City> loadCity(int provinceId) {
-        List<City> cityList = new ArrayList<City>();
+        List<City> cityList = new ArrayList<>();
         Cursor cursor = db.query("City", null, "province_id = ?", new String[]{String.valueOf(provinceId)}, null,
                 null, null);
         if (cursor.moveToFirst()) {
@@ -148,7 +147,7 @@ public class FullWeatherDB {
      * @return List<City>
      */
     public List<County> loadCounty(int cityId) {
-        List<County> countyList = new ArrayList<County>();
+        List<County> countyList = new ArrayList<>();
         Cursor cursor = db.query("County", null, "city_id = ?", new String[]{String.valueOf(cityId)}, null, null, null);
         if (cursor.moveToFirst()) {
             do {

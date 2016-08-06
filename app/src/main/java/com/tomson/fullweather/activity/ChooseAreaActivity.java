@@ -84,7 +84,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dataList);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dataList);
         mLvList.setAdapter(mAdapter);
         fullWeatherDB = FullWeatherDB.getInstance(this);
         mLvList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -182,9 +182,9 @@ public class ChooseAreaActivity extends AppCompatActivity {
                 if ("province".equals(type)) {
                     result = Utility.handleProvincesResponse(fullWeatherDB, response);
                 } else if ("city".equals(type)) {
-                    result = Utility.handleCitysResponse(fullWeatherDB, response, selectedProvince.getId());
+                    result = Utility.handleCitiesResponse(fullWeatherDB, response, selectedProvince.getId());
                 } else if ("county".equals(type)) {
-                    result = Utility.handleCountyResponse(fullWeatherDB, response, selectedCity.getId());
+                    result = Utility.handleCountiesResponse(fullWeatherDB, response, selectedCity.getId());
                 }
                 if (result) {
                     //通过runOnUiThread()方法回到主线程处理UI
@@ -245,7 +245,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        Log.i(TAG, "currentLevel-->" + currentLevel);
         if (currentLevel == LEVEL_COUNTY) {
             queryCities();
         } else if (currentLevel == LEVEL_CITY) {

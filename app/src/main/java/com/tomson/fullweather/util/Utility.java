@@ -3,7 +3,6 @@ package com.tomson.fullweather.util;
 import android.text.TextUtils;
 
 import com.tomson.fullweather.db.FullWeatherDB;
-import com.tomson.fullweather.db.FullWeatherOpenHelper;
 import com.tomson.fullweather.model.City;
 import com.tomson.fullweather.model.County;
 import com.tomson.fullweather.model.Province;
@@ -38,7 +37,7 @@ public class Utility {
     /**
      * 解析和处理服务器返回的城市数据
      */
-    public synchronized static boolean handleCitysResponse(FullWeatherDB fullWeatherDB, String response, int
+    public synchronized static boolean handleCitiesResponse(FullWeatherDB fullWeatherDB, String response, int
             provinceId) {
 
         if (!TextUtils.isEmpty(response)) {
@@ -62,7 +61,7 @@ public class Utility {
     /**
      * 解析和处理服务器返回的县城数据
      */
-    public synchronized static boolean handleCountyResponse(FullWeatherDB fullWeatherDB, String response, int cityId) {
+    public synchronized static boolean handleCountiesResponse(FullWeatherDB fullWeatherDB, String response, int cityId) {
 
         if (!TextUtils.isEmpty(response)) {
             String[] allCounties = response.split(",");
