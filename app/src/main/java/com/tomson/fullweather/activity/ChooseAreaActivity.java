@@ -1,7 +1,11 @@
 package com.tomson.fullweather.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -72,6 +76,8 @@ public class ChooseAreaActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        isSelectedCity();
         setContentView(R.layout.choose_area);
 
         findViewById();
@@ -96,11 +102,31 @@ public class ChooseAreaActivity extends AppCompatActivity {
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(i);
                     queryCounties();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String countyCode = countyList.get(i).getCountyCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+                    intent.putExtra("countyCode", countyCode);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
         queryProvinces();
     }
+
+    /**
+     * 判断是否设置过本地城市
+     */
+    private void isSelectedCity() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (preferences.getBoolean("city_selected", false)) {
+            Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+    }
+
 
     /**
      * 查询全国所有省份，优先从数据库查询，如果没有查询到再去服务器上查询
