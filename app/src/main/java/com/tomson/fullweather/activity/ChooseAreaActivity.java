@@ -70,6 +70,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
      * 当前选中的级别
      */
     private int currentLevel;
+    private boolean isFromWeatherActivity;
 
     private static final String TAG = "ChooseAreaActivity";
 
@@ -105,7 +106,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
                 } else if (currentLevel == LEVEL_COUNTY) {
                     String countyCode = countyList.get(i).getCountyCode();
                     Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
-                    intent.putExtra("countyCode", countyCode);
+                    intent.putExtra("county_code", countyCode);
                     startActivity(intent);
                     finish();
                 }
@@ -118,8 +119,10 @@ public class ChooseAreaActivity extends AppCompatActivity {
      * 判断是否设置过本地城市
      */
     private void isSelectedCity() {
+
+        isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (preferences.getBoolean("city_selected", false)) {
+        if (preferences.getBoolean("city_selected", false) && !isFromWeatherActivity) {
             Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
             startActivity(intent);
             finish();
@@ -277,6 +280,10 @@ public class ChooseAreaActivity extends AppCompatActivity {
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces();
         } else {
+            if (isFromWeatherActivity) {
+                Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+                startActivity(intent);
+            }
             finish();
         }
     }

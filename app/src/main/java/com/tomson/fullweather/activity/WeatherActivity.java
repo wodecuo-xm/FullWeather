@@ -1,12 +1,16 @@
 package com.tomson.fullweather.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,7 +22,7 @@ import com.tomson.fullweather.util.Utility;
 /**
  * Created by Tomson on 2016/8/6.
  */
-public class WeatherActivity extends AppCompatActivity {
+public class WeatherActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView mTextCity;
     private TextView mTextPublishTime;
@@ -26,11 +30,15 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView mTextWeather;
     private TextView mTextTemp;
     private LinearLayout mLyWeatherInfo;
+    private ImageView mImgChangeCity;
+    private ImageView mImgSync;
+
+    private static final String TAG = "WeatherActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.weather_show);
 
         findViewById();
@@ -58,6 +66,33 @@ public class WeatherActivity extends AppCompatActivity {
         mTextTemp = (TextView) findViewById(R.id.txt_temp);
         mTextWeather = (TextView) findViewById(R.id.txt_weather);
         mLyWeatherInfo = (LinearLayout) findViewById(R.id.ly_weather_info);
+        mImgChangeCity = (ImageView) findViewById(R.id.img_change_city);
+        mImgSync = (ImageView) findViewById(R.id.img_sync);
+
+        mImgChangeCity.setOnClickListener(this);
+        mImgSync.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.img_change_city:
+
+                Intent intent = new Intent(WeatherActivity.this, ChooseAreaActivity.class);
+                intent.putExtra("from_weather_activity", true);
+                startActivity(intent);
+                finish();
+                break;
+            case R.id.img_sync:
+
+                mTextPublishTime.setText("同步中...");
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                String weatherCode = preferences.getString("weather_code", "");
+                if (!TextUtils.isEmpty(weatherCode)){
+                    queryWeatherInfo(weatherCode);
+                }
+                break;
+        }
     }
 
     /**
@@ -78,7 +113,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     private void queryWeatherInfo(String weatherCode) {
 
-        String address = "http://http://www.weather.com.cn/data/cityinfo/" + weatherCode + ".html";
+        String address = "http://www.weather.com.cn/data/cityinfo/" + weatherCode + ".html";
         queryFromServer(address, "weatherCode");
     }
 
@@ -94,7 +129,9 @@ public class WeatherActivity extends AppCompatActivity {
         HttpUtil.sendHttpRequest(address, new HttpCallBackListener() {
             @Override
             public void onFinish(String response) {
+                Log.i(TAG, "onFinish-->" + type);
                 if ("countyCode".equals(type)) {
+                    Log.i(TAG, "onFinish-->" + type + address);
                     if (!TextUtils.isEmpty(response)) {
                         // 从服务器返回的数据中解析出天气code
                         String[] array = response.split("\\|");
@@ -104,6 +141,7 @@ public class WeatherActivity extends AppCompatActivity {
                         }
                     }
                 } else if ("weatherCode".equals(type)) {
+                    Log.i(TAG, "onFinish-->" + type + address);
                     // 处理服务器返回的天气信息
                     Utility.handleWeatherResponse(WeatherActivity.this, response);
                     runOnUiThread(new Runnable() {
@@ -117,6 +155,7 @@ public class WeatherActivity extends AppCompatActivity {
 
             @Override
             public void onError(Exception e) {
+                Log.i(TAG, "onError-->" + type + address);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -133,11 +172,12 @@ public class WeatherActivity extends AppCompatActivity {
     private void showWeather() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mTextCity.setText(prefs.getString("city_name", ""));
-        mTextPublishTime.setText(prefs.getString("今天 " + "publish_time", "") + " 发布");
+        mTextPublishTime.setText("今天 " + prefs.getString("publish_time", "") + " 发布");
         mTextTemp.setText(prefs.getString("temp1", "") + " ~ " + prefs.getString("temp2", ""));
         mTextDate.setText(prefs.getString("current_date", ""));
         mTextWeather.setText(prefs.getString("weather_desp", ""));
         mLyWeatherInfo.setVisibility(View.VISIBLE);
         mTextCity.setVisibility(View.VISIBLE);
     }
+
 }

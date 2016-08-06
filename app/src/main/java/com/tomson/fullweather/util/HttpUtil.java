@@ -30,7 +30,8 @@ public class HttpUtil {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                     StringBuilder response = new StringBuilder();
                     String line;
-                    while (null != (line = reader.readLine())) {
+                    while ((line = reader.readLine()) != null) {
+                        Log.i(TAG, "line-->" + line);
                         response.append(line);
                     }
                     if (listener != null) {

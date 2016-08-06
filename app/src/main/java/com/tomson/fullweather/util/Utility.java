@@ -1,9 +1,7 @@
 package com.tomson.fullweather.util;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.icu.text.SimpleDateFormat;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
@@ -15,6 +13,7 @@ import com.tomson.fullweather.model.Province;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -123,10 +122,8 @@ public class Utility {
      * @param weatherDesp
      * @param publishTime
      */
-    @TargetApi(24)
     private static void saveWeatherInfo(Context context, String cityName, String weatherCode, String temp1, String
-            temp2,
-                                        String weatherDesp, String publishTime) {
+            temp2, String weatherDesp, String publishTime) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.putBoolean("city_selected", true);
@@ -136,7 +133,7 @@ public class Utility {
         editor.putString("temp2", temp2);
         editor.putString("weather_desp", weatherDesp);
         editor.putString("publish_time", publishTime);
-        editor.putString("current_date", dateFormat.format(new Date()));
+        editor.putString("current_date", dateFormat.format(new Date(System.currentTimeMillis())));
         editor.commit();
     }
 
